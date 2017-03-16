@@ -7,6 +7,9 @@
 #include <sys/stat.h>
 #include <vector>
 
+#ifdef _MSC_
+#else
+
 class FileMap {
 
     using StringType = std::string;
@@ -62,6 +65,8 @@ private:
     off_t _size;
 };
 
+#endif
+
 std::vector<std::tuple<size_t, size_t>>
 filemap_into_blocks(const FileMap &fileMap, int nblocks, char spliter = '\n') {
 
@@ -85,9 +90,13 @@ filemap_into_blocks(const FileMap &fileMap, int nblocks, char spliter = '\n') {
     return std::move(blocks);
 };
 
-int main() {
+int main(int argc, char **argv) {
 
-    FileMap fileMap("/Users/hackeris/hello.txt");
+    if (argc < 2) {
+        std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
+        return -1;
+    }
+    FileMap fileMap(argv[1]);
 
     if (!fileMap.ok()) {
         std::cout << "Open file map error." << std::endl;
