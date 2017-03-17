@@ -6,29 +6,39 @@
 #include "FileMap.h"
 
 std::vector<std::tuple<size_t, size_t>>
-filemap_into_blocks(const FileMap &fileMap, int nblocks, char spliter = '\n') {
+csv_filemap_into_blocks(const FileMap &fileMap, int nblocks, bool skipHeader = true) {
 
-    using block_type = std::tuple<size_t, size_t>;
-    using std::max;
-    using std::min;
+	using block_type = std::tuple<size_t, size_t>;
+	using std::max;
+	using std::min;
 
-    const char *buffer = (const char *) fileMap.get();
-    off_t size = fileMap.size();
+	const char *buffer = (const char *)fileMap.get();
+	size_t size = fileMap.size();
 
-    std::vector<block_type> blocks;
+	std::vector<block_type> blocks;
 
-    size_t blockSize = (size_t) (size / nblocks);
-    off_t pos = 0;
-    for (int i = 0; i < nblocks; i++) {
-        pos = max((off_t) (i * blockSize), pos);
-        off_t blockStart = pos;
-        pos = (off_t) min(size_t(blockSize + pos), (size_t) size);
-        while (pos < size && buffer[pos++] != spliter);
-        blocks.push_back(std::make_tuple(blockStart, pos));
-    }
+	size_t blockSize = (size_t)(size / nblocks);
+	size_t pos = 0;
 
-    return std::move(blocks);
-};
+	//	skip table header
+	if (skipHeader) {
+		while (buffer[pos++] != '\n') { pos++; }
+		if (buffer[pos] == '\r') { pos++; }
+	}
+
+	for (int i = 0; i < nblocks; i++) {
+		pos = max((size_t)(i * blockSize), pos);
+		size_t blockStart = pos;
+		pos = (size_t)min(size_t(blockSize + pos), (size_t)size);
+		while (pos < size && buffer[pos++] != '\n');
+		if (buffer[pos] == '\r') {
+			pos ++;
+		}
+		blocks.push_back(std::make_tuple(blockStart, pos));
+	}
+
+	return blocks;
+}
 
 int main(int argc, char **argv) {
 
@@ -45,9 +55,9 @@ int main(int argc, char **argv) {
     }
 
     const char *pFile = static_cast<const char *> (fileMap.get());
-    off_t size = fileMap.size();
+    size_t size = fileMap.size();
 
-    auto blocks = filemap_into_blocks(fileMap, nblocks);
+    auto blocks = csv_filemap_into_blocks(fileMap, nblocks);
 
     for (const auto &blk : blocks) {
         size_t start, end;
