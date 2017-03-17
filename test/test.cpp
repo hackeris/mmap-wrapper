@@ -32,11 +32,12 @@ filemap_into_blocks(const FileMap &fileMap, int nblocks, char spliter = '\n') {
 
 int main(int argc, char **argv) {
 
-    if (argc < 2) {
-        std::cout << "Usage: " << argv[0] << " <filename>" << std::endl;
+    if (argc < 3) {
+        std::cout << "Usage: " << argv[0] << " <filename> <n blocks>" << std::endl;
         return -1;
     }
     FileMap fileMap(argv[1]);
+    int nblocks = atoi(argv[2]);
 
     if (!fileMap.ok()) {
         std::cout << "Open file map error." << std::endl;
@@ -46,7 +47,7 @@ int main(int argc, char **argv) {
     const char *pFile = static_cast<const char *> (fileMap.get());
     off_t size = fileMap.size();
 
-    auto blocks = filemap_into_blocks(fileMap, 4);
+    auto blocks = filemap_into_blocks(fileMap, nblocks);
 
     for (const auto &blk : blocks) {
         size_t start, end;
