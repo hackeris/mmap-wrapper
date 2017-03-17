@@ -14,39 +14,39 @@
 
 class FileMap {
 
-    static std::wstring c2w(const char *pc);
+	static std::wstring c2w(const char *pc);
 
 public:
-    FileMap(const std::wstring& filename);
+	FileMap(const std::wstring& filename);
 
-    FileMap(const std::string &filename);
+	FileMap(const std::string &filename);
 
-    const inline void *get() const {
-        return _buf;
-    }
+	const inline void *get() const {
+		return _buf;
+	}
 
-    inline off_t size() const {
-        return _size;
-    }
+	inline size_t size() const {
+		return _size;
+	}
 
-    inline bool ok() const {
-        return _buf != nullptr;
-    }
+	inline bool ok() const {
+		return _buf != nullptr;
+	}
 
-    ~FileMap();
-
-private:
-    FileMap(const FileMap &) = delete;
-
-    FileMap(FileMap &&) = delete;
-
-    FileMap &operator=(const FileMap &) = delete;
+	~FileMap();
 
 private:
-    HANDLE _fd;
-    HANDLE _map;
-    const void *_buf;
-    off_t _size;
+	FileMap(const FileMap &) = delete;
+
+	FileMap(FileMap &&) = delete;
+
+	FileMap &operator=(const FileMap &) = delete;
+
+private:
+	HANDLE _fd;
+	HANDLE _map;
+	const void *_buf;
+	size_t _size;
 };
 
 #else   // for Unix like OS
@@ -59,33 +59,33 @@ private:
 class FileMap {
 
 public:
-    FileMap(const std::string &filename);
+	FileMap(const std::string &filename);
 
-    const inline void *get() const {
-        return _buf;
-    }
+	const inline void *get() const {
+		return _buf;
+	}
 
-    inline off_t size() const {
-        return _size;
-    }
+	inline size_t size() const {
+		return _size;
+	}
 
-    inline bool ok() const {
-        return _buf != nullptr;
-    }
+	inline bool ok() const {
+		return _buf != nullptr;
+	}
 
-    ~FileMap();
-
-private:
-    FileMap(const FileMap &) = delete;
-
-    FileMap(FileMap &&) = delete;
-
-    FileMap &operator=(const FileMap &) = delete;
+	~FileMap();
 
 private:
-    int _fd;
-    const void *_buf;
-    off_t _size;
+	FileMap(const FileMap &) = delete;
+
+	FileMap(FileMap &&) = delete;
+
+	FileMap &operator=(const FileMap &) = delete;
+
+private:
+	int _fd;
+	const void *_buf;
+	size_t _size;
 };
 
 #endif
